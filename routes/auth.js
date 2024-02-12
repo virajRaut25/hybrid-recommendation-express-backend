@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { body, validationResult } = require("express-validator");
 const User = require("../models/User");
+const UserItem = require("../models/UserItem");
 const fetchuser = require("../middleware/fetchuser");
 require("dotenv").config();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -49,6 +50,24 @@ router.post(
           id: user.id,
         },
       };
+
+      const item = new UserItem({
+        user_id: user.id,
+        search_history: [],
+        liked: [],
+        weekday: {
+          Sun: new Map(),
+          Mon: new Map(),
+          Tue: new Map(),
+          Wed: new Map(),
+          Thu: new Map(),
+          Fri: new Map(),
+          Sat: new Map(),
+        },
+      });
+
+      await item.save();
+
       const authtoken = jwt.sign(data, JWT_SECRET);
       success = true;
       res.json({ success, authtoken });
