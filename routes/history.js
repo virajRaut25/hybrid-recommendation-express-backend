@@ -42,7 +42,7 @@ router.post("/addSearch/:title", fetchuser, async (req, res) => {
 router.delete("/delHistory", fetchuser, async (req, res) => {
   try {
     let user_item = await UserItem.findOne({ user_id: req.user.id });
-    
+
     let search_history = [];
 
     user_item = await UserItem.find({ user_id: req.user.id }).updateOne({
@@ -142,7 +142,7 @@ router.post(
   }
 );
 
-// Route 7: Get Genre for Day: Post "/api/history/getGenreDay"
+// Route 7: Get Genre for Day: Get "/api/history/getGenreDay"
 router.get("/getGenreDay", fetchuser, async (req, res) => {
   try {
     const today = new Date().toLocaleString("en-us", { weekday: "short" });
@@ -150,6 +150,31 @@ router.get("/getGenreDay", fetchuser, async (req, res) => {
     let day = user_item.weekday[today];
     day = [...day.keys()].filter((e, i) => i < 2);
     res.json(day);
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+// Route 8: Get Stats of every day: Get "/api/history/weekstats"
+router.get("/weekstats", fetchuser, async (req, res) => {
+  try {
+    let userItem = await UserItem.findOne({ user_id: req.user.id });
+    let Monday = userItem.weekday["Mon"];
+    let Tuesday = userItem.weekday["Tue"];
+    let Wednesday = userItem.weekday["Wed"];
+    let Thursday = userItem.weekday["Thu"];
+    let Friday = userItem.weekday["Fri"];
+    let Saturday = userItem.weekday["Sat"];
+    let Sunday = userItem.weekday["Sun"];
+    res.json({
+      Monday,
+      Tuesday,
+      Wednesday,
+      Thursday,
+      Friday,
+      Saturday,
+      Sunday,
+    });
   } catch (error) {
     res.status(500).send("Internal Server Error");
   }
